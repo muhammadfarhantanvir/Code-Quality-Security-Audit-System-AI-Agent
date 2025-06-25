@@ -2,7 +2,7 @@
 
 ![Code Quality](code%20quality.png)
 
-
+![Code Quality 2](code_quality_2.png)
 ## Overview
 
 The Code Quality & Security Audit System is a Python-based tool designed to analyze codebases for security vulnerabilities and quality issues. It combines pattern-based analysis with AI-driven insights using local Ollama models to identify potential risks, such as OWASP Top 10 vulnerabilities, and code quality problems, such as long functions or missing docstrings. The system generates detailed audit reports, stores results in a SQLite database, and provides a Streamlit-based dashboard for visualizing findings.
