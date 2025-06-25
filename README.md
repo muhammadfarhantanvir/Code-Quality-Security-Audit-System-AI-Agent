@@ -1,14 +1,6 @@
 # Code Quality & Security Audit System
 
-
-
 ![Code Quality](code%20quality.png)
-
-
-
-
-## Overview
-...existing code...
 
 
 ## Overview
