@@ -8,7 +8,24 @@ An AI-powered code quality and security audit system that combines pattern-based
 
 ![Code Quality Dashboard](assets/images/code%20quality.png)
 
+<<<<<<< HEAD
 ## ✨ Features
+=======
+## 🌍 Real-World Impact:
+- 🔒 Helps teams build secure, compliant applications faster
+- 📉 Reduces time spent on manual code review by 50–70%
+- 📊 Improves engineering efficiency and software audit readiness
+- 🧩 Easy to integrate into existing DevOps and CI/CD pipelines
+
+### Key Features
+- **Security Analysis**: Detects vulnerabilities like SQL injection, XSS, hardcoded secrets, and more using regex patterns and AI analysis.
+- **Code Quality Checks**: Identifies issues like code duplication, complex functions, and missing docstrings.
+- **AI Integration**: Leverages local Ollama models (`deepseek-coder:6.7b`, `deepseek-r1:1.5b`, `deepscaler`) for advanced analysis.
+- **Database Storage**: Saves audit reports and issues in a SQLite database for historical tracking.
+- **Interactive Dashboard**: Visualizes results using Streamlit and Plotly for easy interpretation.
+- **Compliance Reporting**: Supports standards like PCI-DSS, SOX, GDPR, HIPAA, and ISO 27001 (placeholder implementation).
+- **CLI and GUI Support**: Run audits via command-line interface or interactive web dashboard.
+>>>>>>> 35e2d9335654bcae54f36f8a5bedacd436645972
 
 - 🔒 **Security Analysis**: OWASP Top 10 vulnerability detection
 - 📊 **Code Quality**: Maintainability and complexity analysis  
