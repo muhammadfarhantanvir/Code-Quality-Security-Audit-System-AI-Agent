@@ -1,64 +1,65 @@
-# Python-specific ignores
-*.pyc
-*.pyo
-*.pyd
+# Python
 __pycache__/
-*.egg-info/
-.pytest_cache/
+*.py[cod]
+*$py.class
 *.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Virtual environment
+# Virtual environments
 venv/
 env/
-.venv/
+ENV/
+env.bak/
+venv.bak/
 
-# SQLite database
-audit_results.db
-
-# IDE and editor files
-.idea/
+# IDE
 .vscode/
-*.sublime-workspace
-*.sublime-project
-
-# OS-generated files
-.DS_Store
-Thumbs.db
-
-# Dependency directories
-node_modules/
-
-# Temporary files
-*.log
-*.tmp
-*.bak
+.idea/
 *.swp
+*.swo
 *~
 
-# Output files
-*.json
-report.json
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Coverage reports
-.coverage
-coverage.xml
-htmlcov/
+# Project specific
+audit_results.db
+*.log
+test_report.json
+sample_project/
+projects/
 
-# Cache and build directories
-*.cache/
-dist/
-build/
-
-# Sensitive data
-.env
-*.key
-*.pem
-*.secret
-
-# Streamlit-specific ignores
+# Streamlit
 .streamlit/
-*.streamlit
 
-# Miscellaneous
-*.DS_Store
-*.ipynb_checkpoints
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

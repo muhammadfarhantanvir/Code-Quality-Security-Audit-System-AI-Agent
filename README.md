@@ -1,200 +1,306 @@
-# Code Quality & Security Audit System
+# 🔍 Code Quality & Security Audit System
 
-![Code Quality](code%20quality.png)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 
-![Code Quality 2](code_quality_2.png)
-## Overview
+An AI-powered code quality and security audit system that combines pattern-based analysis with local AI models to identify vulnerabilities, code quality issues, and provide actionable recommendations.
 
-The Code Quality & Security Audit System is a Python-based tool designed to analyze codebases for security vulnerabilities and quality issues. It combines pattern-based analysis with AI-driven insights using local Ollama models to identify potential risks, such as OWASP Top 10 vulnerabilities, and code quality problems, such as long functions or missing docstrings. The system generates detailed audit reports, stores results in a SQLite database, and provides a Streamlit-based dashboard for visualizing findings.
+![Code Quality Dashboard](assets/images/code%20quality.png)
 
-### Key Features
-- **Security Analysis**: Detects vulnerabilities like SQL injection, XSS, hardcoded secrets, and more using regex patterns and AI analysis.
-- **Code Quality Checks**: Identifies issues like code duplication, complex functions, and missing docstrings.
-- **AI Integration**: Leverages local Ollama models (`deepseek-coder:6.7b`, `deepseek-r1:1.5b`, `deepscaler`) for advanced analysis.
-- **Database Storage**: Saves audit reports and issues in a SQLite database for historical tracking.
-- **Interactive Dashboard**: Visualizes results using Streamlit and Plotly for easy interpretation.
-- **Compliance Reporting**: Supports standards like PCI-DSS, SOX, GDPR, HIPAA, and ISO 27001 (placeholder implementation).
-- **CLI and GUI Support**: Run audits via command-line interface or interactive web dashboard.
+## ✨ Features
 
-## Requirements
+- 🔒 **Security Analysis**: OWASP Top 10 vulnerability detection
+- 📊 **Code Quality**: Maintainability and complexity analysis  
+- 🤖 **AI-Powered**: Local Ollama integration for advanced insights
+- 🌐 **Web Dashboard**: Interactive Streamlit interface
+- 💻 **CLI Tool**: Comprehensive command-line interface
+- 📈 **Historical Tracking**: Trend analysis and reporting
+- 🐳 **Docker Ready**: Containerized deployment
+- 🔧 **Configurable**: Customizable patterns and thresholds
 
- ```bash
-   pip install -r requirements.txt
-   ```
+## 🚀 Quick Start
 
-- **Python**: 3.9 or higher
-- **Dependencies**:
-  - `requests`
-  - `pandas`
-  - `streamlit`
-  - `plotly`
-- **Ollama**: Local Ollama server running at `http://localhost:11434` with models:
-  - `deepseek-coder:6.7b`
-  - `deepseek-r1:1.5b`
-  - `deepscaler`
-- **Operating System**: Linux, macOS, or Windows
-- **Optional**: SQLite for persistent storage (included with Python)
+### Option 1: One-Command Installation
 
-## Installation
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent
-   cd code-audit-system
-   ```
-
-2. **Install Python Dependencies**:
-   Create a virtual environment and install required packages:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install requests pandas streamlit plotly
-   ```
-
-3. **Set Up Ollama**:
-   - Install Ollama: Follow instructions at [Ollama's official site](https://ollama.ai/).
-   - Pull required models:
-     ```bash
-     ollama pull deepseek-coder:6.7b
-     ollama pull deepseek-r1:1.5b
-     ollama pull deepscaler
-     ```
-   - Ensure the Ollama server is running:
-     ```bash
-     ollama serve
-     ```
-
-4. **Verify Setup**:
-   Run the script to ensure dependencies are correctly installed:
-   ```bash
-   python code_auditor.py --help
-   ```
-
-## Usage
-
-### Command-Line Interface (CLI)
-Run an audit on a project directory:
+**Linux/macOS:**
 ```bash
-python code_auditor.py --directory /path/to/your/project
-```
-Save the report to a JSON file:
-```bash
-python code_auditor.py --directory /path/to/your/project --output report.json
-```
-Launch the Streamlit dashboard:
-```bash
-python code_auditor.py --directory /path/to/your/project --dashboard
+curl -fsSL https://raw.githubusercontent.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent/main/scripts/install.sh | bash
 ```
 
-### Streamlit Dashboard
-1. Start the dashboard:
-   ```bash
-   streamlit run code_auditor.py
-   ```
-2. Open your browser to `http://localhost:8501`.
-3. Enter the project directory path and click "Start Audit" to scan and view results.
-
-### Supported File Types
-The tool scans files with the following extensions:
-- Python: `.py`
-- JavaScript/TypeScript: `.js`, `.jsx`, `.ts`, `.tsx`
-- Java: `.java`
-- C/C++: `.c`, `.cpp`
-- PHP: `.php`
-- Ruby: `.rb`
-- Go: `.go`
-
-## Project Structure
-
-```
-code-audit-system/
-├── code_auditor.py         # Main script
-├── audit_results.db        # SQLite database for storing audit reports
-├── venv/                   # Virtual environment (after setup)
-├── README.md               # This file
-└── sample_project/         # Example project directory for testing
+**Windows:**
+```powershell
+iwr -useb https://raw.githubusercontent.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent/main/scripts/install.bat | iex
 ```
 
-## Configuration
-
-- **Ollama Server**: Configure the base URL in `OllamaClient` if your Ollama server runs on a different host or port (default: `http://localhost:11434`).
-- **Database**: Audit reports are stored in `audit_results.db`. Modify `db_path` in `CodeAuditor` to change the database location.
-- **File Size Limit**: AI analysis is limited to files under 2000 characters for performance. Adjust this in the `scan_directory` method if needed.
-
-## Output
-
-- **CLI Output**: Summary of files scanned, total lines, security/quality issues, and risk score. Detailed reports can be saved as JSON.
-- **Dashboard Output**: Interactive visualizations including:
-  - Risk score and issue counts
-  - Bar charts for security issues by type
-  - Pie charts for quality issue distribution
-  - Detailed issue lists with code snippets and recommendations
-  - Historical trend analysis of risk scores
-
-## Example
+### Option 2: Docker (Recommended)
 
 ```bash
-python code_auditor.py --directory ./sample_project --output audit_report.json
+git clone https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent
+cd Code-Quality-Security-Audit-System-AI-Agent
+docker-compose -f docker/docker-compose.yml up -d
 ```
 
-Sample JSON report output:
-```json
-{
-  "project_path": "./sample_project",
-  "scan_date": "2025-06-25T16:25:00",
-  "total_files": 10,
-  "total_lines": 1000,
-  "security_issues": [
-    {
-      "file_path": "app.py",
-      "line_number": 42,
-      "issue_type": "SQL Injection",
-      "severity": "HIGH",
-      "description": "Potential SQL injection vulnerability detected",
-      "code_snippet": "cursor.execute(f'SELECT * FROM users WHERE id = {user_id}')",
-      "recommendation": "Use parameterized queries or ORM methods"
-    }
-  ],
-  "quality_issues": [
-    {
-      "file_path": "app.py",
-      "line_number": 100,
-      "issue_type": "Long Functions",
-      "severity": "MEDIUM",
-      "description": "Long Functions detected",
-      "code_snippet": "def process_data(...): ...",
-      "recommendation": "Break down into smaller, focused functions"
-    }
-  ],
-  "risk_score": 75.5,
-  "recommendations": ["URGENT: Address 1 high-severity security vulnerabilities immediately","Implement security code review process"],
-  "code_metrics": {...},
-  "compliance_checks": [...],
-  "scan_duration": 12.34,
-  "files_by_type": {".py": 8, ".js": 2}
-}
+Open http://localhost:8501 in your browser.
+
+### Option 3: Manual Installation
+
+```bash
+# Clone repository
+git clone https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent
+cd Code-Quality-Security-Audit-System-AI-Agent
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run CLI audit
+python main.py --directory /path/to/your/project
+
+# Launch dashboard
+streamlit run dashboard.py
 ```
 
-## Limitations
+## 💻 Usage
 
-- **Ollama Dependency**: Requires a running Ollama server with specific models. Without it, only pattern-based analysis is performed.
-- **Placeholder Metrics**: `CodeMetrics` and `ComplianceCheck` fields are currently placeholders and need implementation for full functionality.
-- **File Size**: Large files (>2000 characters) skip AI analysis to maintain performance.
-- **Language Support**: Limited to specified file extensions; additional languages require pattern updates.
+### Command Line Interface
 
-## Contributing
+```bash
+# Basic audit
+python main.py --directory ./my-project
 
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/new-feature`).
-3. Commit changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature/new-feature`).
-5. Open a pull request.
+# Generate reports
+python main.py --directory ./my-project --output report.json --export-html
 
-## License
+# Filter by severity
+python main.py --directory ./my-project --severity HIGH --verbose
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent/blob/main/LICENSE) file for details.
+# Disable AI for faster scanning
+python main.py --directory ./my-project --no-ai
+```
 
-## Contact
+### Web Dashboard
 
-For issues or feature requests, please open an issue on the [GitHub repository](https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent).
+```bash
+streamlit run dashboard.py
+```
 
+Then open http://localhost:8501 and enter your project path.
+
+### Using Make Commands
+
+```bash
+# Setup everything
+make setup
+
+# Run audit on current directory
+make audit
+
+# Launch dashboard
+make dashboard
+
+# Run tests
+make test
+
+# See all commands
+make help
+```
+
+## 📁 Project Structure
+
+```
+Code-Quality-Security-Audit-System-AI-Agent/
+├── src/code_audit_system/          # Main package
+│   ├── core/                       # Core functionality
+│   │   ├── auditor.py             # Main auditor class
+│   │   ├── models.py              # Data models
+│   │   └── patterns.py            # Security/quality patterns
+│   ├── ai/                        # AI integration
+│   │   └── ollama_client.py       # Ollama client
+│   ├── dashboard/                 # Web interface
+│   │   └── streamlit_app.py       # Streamlit dashboard
+│   └── cli/                       # Command-line interface
+│       └── main.py                # CLI implementation
+├── config/                        # Configuration files
+├── docs/                          # Documentation
+├── scripts/                       # Installation scripts
+├── docker/                        # Docker configuration
+├── tests/                         # Test suite
+├── assets/                        # Images and examples
+├── main.py                        # CLI entry point
+├── dashboard.py                   # Dashboard entry point
+└── Makefile                       # Project management
+```
+
+## 🔍 What It Detects
+
+### Security Issues
+- SQL Injection vulnerabilities
+- Cross-Site Scripting (XSS)
+- Hardcoded secrets and passwords
+- Command injection flaws
+- Insecure communication (HTTP)
+- Path traversal vulnerabilities
+- Weak cryptography usage
+- And more OWASP Top 10 issues...
+
+### Code Quality Issues
+- Long and complex functions
+- Code duplication
+- Missing documentation
+- Poor error handling
+- Magic numbers
+- Deep nesting
+- And more maintainability issues...
+
+## 🤖 AI Integration
+
+The system integrates with local Ollama models for advanced analysis:
+
+- **DeepSeek Coder**: Code security analysis
+- **DeepSeek R1**: Strategic recommendations
+- **DeepScaler**: Technical debt prediction
+
+Install Ollama and pull models:
+```bash
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Pull models
+ollama pull deepseek-coder:6.7b
+ollama pull deepseek-r1:1.5b
+ollama pull deepscaler
+```
+
+## 📊 Supported Languages
+
+- Python (.py)
+- JavaScript/TypeScript (.js, .jsx, .ts, .tsx)
+- Java (.java)
+- C/C++ (.c, .cpp)
+- PHP (.php)
+- Ruby (.rb)
+- Go (.go)
+- Rust (.rs)
+- C# (.cs)
+- Swift (.swift)
+
+## 🔧 Configuration
+
+Customize the system via `config/config.yaml`:
+
+```yaml
+# Scanning options
+scanning:
+  max_file_size: 2000
+  exclude_patterns:
+    - "*/node_modules/*"
+    - "*/venv/*"
+
+# AI settings
+ollama:
+  base_url: "http://localhost:11434"
+  timeout: 60
+
+# Security patterns (customizable)
+security:
+  severity_weights:
+    CRITICAL: 15
+    HIGH: 10
+    MEDIUM: 5
+```
+
+## 📈 Example Output
+
+```bash
+🔍 Code Quality & Security Audit System v1.0.0
+==================================================
+📁 Scanning directory: ./my-project
+
+✅ Audit completed in 3.45 seconds!
+📊 Files scanned: 25
+📏 Total lines: 2,847
+🔐 Security issues: 3
+📊 Quality issues: 12
+⚠️  Risk score: 45.2/100
+🟡 MEDIUM RISK - Review and address issues
+
+🔴 Top Security Issues:
+  1. HIGH - SQL Injection in database.py:42
+  2. MEDIUM - Hardcoded Secret in config.py:15
+  3. MEDIUM - XSS Vulnerability in views.py:128
+
+💡 Recommendations:
+  1. URGENT: Address 1 high-severity security vulnerabilities immediately
+  2. Implement security code review process
+  3. Refactor code to improve maintainability
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+make test
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific tests
+pytest tests/test_security_patterns.py -v
+```
+
+## 🤝 Contributing
+
+We welcome contributions! See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📚 Documentation
+
+- [Getting Started Guide](docs/GETTING_STARTED.md) - Comprehensive setup guide
+- [Contributing Guidelines](docs/CONTRIBUTING.md) - How to contribute
+- [Changelog](docs/CHANGELOG.md) - Version history
+- [Configuration Reference](config/config.yaml) - All configuration options
+
+## 🐳 Docker Deployment
+
+```bash
+# Build and run
+docker-compose -f docker/docker-compose.yml up -d
+
+# Scale services
+docker-compose -f docker/docker-compose.yml up -d --scale code-audit-system=3
+
+# View logs
+docker-compose -f docker/docker-compose.yml logs -f
+```
+
+## 🔒 Security
+
+This tool runs entirely locally - no data is sent to external services. AI analysis uses local Ollama models for privacy and security.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- OWASP for security vulnerability classifications
+- The Ollama team for local AI model infrastructure
+- The open-source security community
+
+## 📞 Support
+
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent/discussions)
+- 📖 **Documentation**: [Getting Started Guide](docs/GETTING_STARTED.md)
+
+---
+
+<div align="center">
+  <p><strong>Made with ❤️ for the developer community</strong></p>
+  <p>⭐ Star this repo if you find it useful!</p>
+</div>
