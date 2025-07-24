@@ -1,6 +1,10 @@
 # Multi-stage build for Code Audit System
 FROM python:3.11-slim as builder
 
+LABEL maintainer="Muhammad Farhan Tanvir <your.email@example.com>"
+LABEL description="AI-powered code quality and security audit system"
+LABEL version="1.0.0"
+
 # Set working directory
 WORKDIR /app
 

@@ -8,10 +8,13 @@ SECURITY_PATTERNS = {
         r'execute\s*\(\s*["\'].*%.*["\']',
         r'cursor\.execute\s*\(\s*["\'].*\+.*["\']',
         r'query\s*=\s*["\'].*\+.*["\']',
+        r'query\s*=\s*f["\'].*\{.*\}.*["\']',
         r'SELECT.*FROM.*WHERE.*=.*\+',
+        r'SELECT.*FROM.*WHERE.*=.*\{',
         r'INSERT.*VALUES.*\+',
         r'UPDATE.*SET.*\+',
         r'DELETE.*WHERE.*\+',
+        r'DELETE.*WHERE.*\{',
     ],
     'XSS Vulnerability': [
         r'innerHTML\s*=\s*.*\+',
@@ -76,15 +79,15 @@ SECURITY_PATTERNS = {
 
 # Advanced Code quality patterns with metrics
 QUALITY_PATTERNS = {
-    'Long Functions': r'def\s+\w+\s*\([^)]*\):[^def]{800,}',  # Increased threshold
-    'Complex Functions': r'if.*elif.*elif.*elif',  # Multiple elif chains
+    'Long Functions': r'def\s+\w+.*?:\s*\n(?:\s{4,}.*\n){20,}',  # Functions with 20+ indented lines
+    'Complex Functions': r'elif.*elif.*elif',  # Multiple elif chains (3+)
     'Deep Nesting': r'(\s{4,}){6,}',  # 6+ levels of indentation
     'Duplicate Code': r'(.{50,})\s*\n.*\1',
     'Magic Numbers': r'\b\d{2,}\b(?!\s*[)\]}])',
     'TODO Comments': r'#.*TODO|#.*FIXME|#.*HACK|#.*XXX',
     'Empty Exception': r'except[^:]*:\s*pass',
     'Global Variables': r'^\s*global\s+\w+',
-    'Long Parameter Lists': r'def\s+\w+\s*\([^)]{80,}\)',
+    'Long Parameter Lists': r'def\s+\w+\s*\([^)]{100,}\)',  # Increased threshold
     'Unused Imports': r'import\s+\w+\s*',
     'Missing Docstrings': r'def\s+\w+\s*\([^)]*\):\s*\n\s*(?!""")',
     'Overly Complex Regex': r'r["\'].*[{}\[\]().*+?^$|\\]{10,}.*["\']',

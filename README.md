@@ -6,6 +6,14 @@
 
 An AI-powered code quality and security audit system that combines pattern-based analysis with local AI models to identify vulnerabilities, code quality issues, and provide actionable recommendations.
 
+## 🌐 Try It Live!
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Try_Now-brightgreen?style=for-the-badge)](https://code-audit-system.railway.app)
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/your-template-id)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent)
+
 ![Code Quality Dashboard](assets/images/code%20quality.png)
 
 
