@@ -25,6 +25,60 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+def analyze_github_repository(github_url, github_analyzer, auditor):
+    """Analyze a GitHub repository"""
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    try:
+        # Step 1: Clone repository
+        status_text.text("🔄 Cloning repository...")
+        progress_bar.progress(20)
+        
+        temp_dir, error = github_analyzer.clone_repository(github_url, max_size_mb=50)
+        
+        if error:
+            st.error(f"❌ {error}")
+            return
+        
+        # Step 2: Get repository stats
+        status_text.text("📊 Analyzing repository structure...")
+        progress_bar.progress(40)
+        
+        repo_stats = github_analyzer.get_repo_stats(temp_dir)
+        repo_info = github_analyzer.get_repo_info(github_url)
+        
+        # Step 3: Run security and quality analysis
+        status_text.text("🔍 Scanning for security and quality issues...")
+        progress_bar.progress(60)
+        
+        report = auditor.scan_directory(temp_dir, use_ai=False)  # Disable AI for public demo
+        
+        # Step 4: Store results
+        progress_bar.progress(80)
+        
+        st.session_state['current_report'] = report
+        st.session_state['repo_info'] = repo_info
+        st.session_state['repo_stats'] = repo_stats
+        st.session_state['github_url'] = github_url
+        
+        # Step 5: Cleanup
+        status_text.text("🧹 Cleaning up...")
+        progress_bar.progress(100)
+        
+        github_analyzer.cleanup_temp_dir(temp_dir)
+        
+        # Clear progress indicators
+        progress_bar.empty()
+        status_text.empty()
+        
+        st.success(f"✅ Analysis completed for {repo_info['full_name']}!")
+        
+    except Exception as e:
+        st.error(f"❌ Analysis failed: {str(e)}")
+        progress_bar.empty()
+        status_text.empty()
+
 def create_demo_files():
     """Create demo files for users to test"""
     demo_dir = Path("demo_project")
@@ -77,35 +131,97 @@ def bad_function():
     return str(demo_dir)
 
 def main():
-    """Main application with demo setup"""
+    """Main application with GitHub repository analysis"""
     st.title("🔍 Code Quality & Security Audit System")
-    st.markdown("### Live Demo - Analyze Your Code for Security & Quality Issues")
+    st.markdown("### Analyze Any GitHub Repository for Security & Quality Issues")
     
     # Add demo notice
-    st.info("🎯 **Live Demo**: This is a public demo. For production use, install locally or use Docker.")
+    st.info("🎯 **Live Demo**: Analyze any public GitHub repository instantly! For private repos and advanced features, install locally.")
     
-    # Create demo files
-    demo_path = create_demo_files()
+    # Import GitHub analyzer
+    from src.code_audit_system.core.github_analyzer import GitHubAnalyzer
     
-    # Initialize auditor
+    # Initialize components
     auditor = CodeAuditor()
+    github_analyzer = GitHubAnalyzer()
     
     # Sidebar
-    st.sidebar.header("🚀 Try the Demo")
-    st.sidebar.markdown("**Quick Start:**")
-    st.sidebar.markdown("1. Click 'Run Demo Audit' below")
-    st.sidebar.markdown("2. See security & quality issues")
-    st.sidebar.markdown("3. Get actionable recommendations")
+    st.sidebar.header("🚀 Analyze Repository")
     
-    # Demo button
-    if st.sidebar.button("🎯 Run Demo Audit", type="primary"):
-        with st.spinner("🔍 Analyzing demo code..."):
-            try:
-                report = auditor.scan_directory(demo_path, use_ai=False)  # Disable AI for demo
-                st.session_state['current_report'] = report
-                st.success("✅ Demo audit completed!")
-            except Exception as e:
-                st.error(f"❌ Demo error: {str(e)}")
+    # Analysis mode selection
+    analysis_mode = st.sidebar.radio(
+        "Choose Analysis Mode:",
+        ["🌐 GitHub Repository", "📁 Demo Code"],
+        index=0
+    )
+    
+    if analysis_mode == "🌐 GitHub Repository":
+        # GitHub URL input
+        st.sidebar.markdown("**Enter GitHub Repository URL:**")
+        github_url = st.sidebar.text_input(
+            "Repository URL",
+            placeholder="https://github.com/owner/repository",
+            help="Enter the full GitHub repository URL"
+        )
+        
+        # Examples
+        with st.sidebar.expander("📋 Example URLs"):
+            st.code("https://github.com/django/django")
+            st.code("https://github.com/pallets/flask")
+            st.code("https://github.com/fastapi/fastapi")
+            st.code("https://github.com/microsoft/vscode")
+        
+        # Validate URL
+        if github_url:
+            if github_analyzer.is_valid_github_url(github_url):
+                st.sidebar.success("✅ Valid GitHub URL")
+                
+                # Get repository info
+                with st.spinner("Getting repository info..."):
+                    repo_info = github_analyzer.get_repo_info(github_url)
+                
+                if repo_info:
+                    st.sidebar.markdown("**Repository Info:**")
+                    st.sidebar.markdown(f"📦 **{repo_info['full_name']}**")
+                    if repo_info['description']:
+                        st.sidebar.markdown(f"📝 {repo_info['description'][:100]}...")
+                    st.sidebar.markdown(f"⭐ {repo_info['stars']} stars")
+                    st.sidebar.markdown(f"🍴 {repo_info['forks']} forks")
+                    st.sidebar.markdown(f"💾 {repo_info['size']/1024:.1f} MB")
+                    if repo_info['language']:
+                        st.sidebar.markdown(f"🔤 {repo_info['language']}")
+                    
+                    # Analyze button
+                    if st.sidebar.button("🔍 Analyze Repository", type="primary"):
+                        analyze_github_repository(github_url, github_analyzer, auditor)
+                else:
+                    st.sidebar.error("❌ Repository not found or not accessible")
+            else:
+                st.sidebar.error("❌ Invalid GitHub URL format")
+    
+    else:  # Demo mode
+        st.sidebar.markdown("**Quick Demo:**")
+        st.sidebar.markdown("1. Click 'Run Demo Audit' below")
+        st.sidebar.markdown("2. See security & quality issues")
+        st.sidebar.markdown("3. Get actionable recommendations")
+        
+        # Create demo files
+        demo_path = create_demo_files()
+        
+        # Demo button
+        if st.sidebar.button("🎯 Run Demo Audit", type="primary"):
+            with st.spinner("🔍 Analyzing demo code..."):
+                try:
+                    report = auditor.scan_directory(demo_path, use_ai=False)  # Disable AI for demo
+                    st.session_state['current_report'] = report
+                    st.session_state['repo_info'] = {
+                        'name': 'Demo Project',
+                        'full_name': 'demo/vulnerable-code',
+                        'description': 'Sample vulnerable code for demonstration'
+                    }
+                    st.success("✅ Demo audit completed!")
+                except Exception as e:
+                    st.error(f"❌ Demo error: {str(e)}")
     
     # Installation instructions
     with st.sidebar.expander("📦 Install Locally"):
@@ -130,12 +246,37 @@ code-audit --directory /path/to/project
     # Display results if available
     if 'current_report' in st.session_state:
         report = st.session_state['current_report']
+        repo_info = st.session_state.get('repo_info', {})
+        repo_stats = st.session_state.get('repo_stats', {})
+        github_url = st.session_state.get('github_url', '')
         
-        # Key metrics
+        # Repository header
+        if repo_info:
+            st.markdown(f"## 📦 Analysis Results: [{repo_info['full_name']}]({github_url})")
+            if repo_info.get('description'):
+                st.markdown(f"*{repo_info['description']}*")
+            
+            # Repository stats
+            col1, col2, col3, col4, col5 = st.columns(5)
+            with col1:
+                st.metric("⭐ Stars", repo_info.get('stars', 0))
+            with col2:
+                st.metric("🍴 Forks", repo_info.get('forks', 0))
+            with col3:
+                st.metric("💾 Size", f"{repo_info.get('size', 0)/1024:.1f} MB")
+            with col4:
+                st.metric("🔤 Language", repo_info.get('language', 'Mixed'))
+            with col5:
+                st.metric("📁 Files", repo_stats.get('supported_files', report.total_files))
+        
+        st.markdown("---")
+        
+        # Analysis metrics
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Risk Score", f"{report.risk_score}/100")
+            risk_color = "🔴" if report.risk_score > 70 else "🟡" if report.risk_score > 30 else "🟢"
+            st.metric("Risk Score", f"{report.risk_score}/100", delta=None)
         
         with col2:
             st.metric("Security Issues", len(report.security_issues))
@@ -144,7 +285,7 @@ code-audit --directory /path/to/project
             st.metric("Quality Issues", len(report.quality_issues))
         
         with col4:
-            st.metric("Files Scanned", report.total_files)
+            st.metric("Lines Analyzed", f"{report.total_lines:,}")
         
         # Risk assessment
         risk_level = "HIGH" if report.risk_score > 70 else "MEDIUM" if report.risk_score > 30 else "LOW"
@@ -191,6 +332,10 @@ code-audit --directory /path/to/project
         # Welcome message
         st.markdown("""
         ## 🎯 What This Tool Does
+        
+        **🌐 Analyze Any GitHub Repository Instantly!**
+        
+        Simply paste a GitHub URL and get a comprehensive analysis of:
         
         This AI-powered system analyzes your code for:
         
