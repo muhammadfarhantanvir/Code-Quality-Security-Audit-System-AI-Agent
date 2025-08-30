@@ -73,7 +73,7 @@ Examples:
             import subprocess
             subprocess.run(["streamlit", "run", "src/code_audit_system/dashboard/streamlit_app.py"])
         except FileNotFoundError:
-            print("❌ Streamlit not found. Install with: pip install streamlit")
+            print(" Streamlit not found. Install with: pip install streamlit")
             sys.exit(1)
         return
     
@@ -89,7 +89,7 @@ Examples:
             with open(args.config, 'r') as f:
                 config = yaml.safe_load(f)
         except Exception as e:
-            print(f"❌ Failed to load config: {e}")
+            print(f"Failed to load config: {e}")
             sys.exit(1)
     
     # Initialize auditor
@@ -99,7 +99,7 @@ Examples:
         
         auditor = CodeAuditor(config)
     except Exception as e:
-        print(f"❌ Failed to initialize auditor: {e}")
+        print(f" Failed to initialize auditor: {e}")
         sys.exit(1)
     
     print("🔍 Code Quality & Security Audit System v1.0.0")
