@@ -8,11 +8,11 @@ An AI-powered code quality and security audit system that combines pattern-based
 
 ## 🌐 Try It Live!
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Try_Now-brightgreen?style=for-the-badge)](https://code-audit-system.railway.app)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Try_Now-brightgreen?style=for-the-badge)](https://code-audit-system.vercel.app)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/your-template-id)
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent)
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent)
+[![Deploy with Docker](https://docker.com/images/deploy-to-docker-light.svg)](https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent#docker-deployment)
 
 ![Code Quality Dashboard](assets/images/code%20quality.png)
 
@@ -289,17 +289,53 @@ We welcome contributions! See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for g
 - [Changelog](docs/CHANGELOG.md) - Version history
 - [Configuration Reference](config/config.yaml) - All configuration options
 
-## 🐳 Docker Deployment
+## 🚀 Deployment Options
 
+### Docker Deployment
+
+#### Quick Start
 ```bash
-# Build and run
-docker-compose -f docker/docker-compose.yml up -d
+# Build and run with Docker Compose
+docker-compose up -d
+
+# Or use the production setup
+docker-compose -f docker-compose.prod.yml up -d
+
+# Access the application at http://localhost:8501
+```
+
+#### Advanced Docker Usage
+```bash
+# Build production image
+docker build -f Dockerfile.prod -t code-audit-system .
+
+# Run with custom port
+docker run -d -p 8080:8501 code-audit-system
 
 # Scale services
-docker-compose -f docker/docker-compose.yml up -d --scale code-audit-system=3
+docker-compose up -d --scale code-audit-system=3
 
 # View logs
-docker-compose -f docker/docker-compose.yml logs -f
+docker-compose logs -f
+```
+
+### Vercel Deployment
+
+Deploy directly to Vercel with one click:
+
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/muhammadfarhantanvir/Code-Quality-Security-Audit-System-AI-Agent)
+
+Or deploy from the command line:
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy to Vercel
+vercel --prod
 ```
 
 ## 🔒 Security
