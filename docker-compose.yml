@@ -1,36 +1,21 @@
 version: '3.8'
 
 services:
-  code-audit-system:
-    build: .
+  backend:
+    build:
+      context: ./backend
     ports:
-      - "8501:8501"
-    volumes:
-      - ./projects:/app/projects:ro  # Mount projects to scan
-      - ./audit_results.db:/app/audit_results.db  # Persist database
+      - "8000:8000"
     environment:
-      - OLLAMA_HOST=ollama:11434
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
     depends_on:
-      - ollama
-    restart: unless-stopped
-
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    environment:
-      - OLLAMA_ORIGINS=*
-    restart: unless-stopped
-    # Uncomment if you have GPU support
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
-
-volumes:
-  ollama_data:
+      - backend

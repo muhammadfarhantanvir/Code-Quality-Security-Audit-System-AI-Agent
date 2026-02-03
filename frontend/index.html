@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code audit ai | Premium Code Security</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-deep: #06070a;
+            --bg-surface: #0f111a;
+            --accent-primary: #00f2ff;
+            --accent-secondary: #7000ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ff4d4d;
+            --warning: #fbbf24;
+            --success: #10b981;
+            --sidebar-bg: #0a0c14;
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --terminal-bg: #000;
+        }
+
+        [data-theme="light"] {
+            --bg-deep: #f0f2f5;
+            --bg-surface: #ffffff;
+            --glass: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-main: #1a1b26;
+            --text-muted: #64748b;
+            --sidebar-bg: #ffffff;
+            --input-bg: #f8fafc;
+            --terminal-bg: #1a1b26;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #app {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--glass-border);
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 60px;
+        }
+
+        .logo i {
+            color: var(--accent-primary);
+        }
+
+        .nav-links {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .nav-links li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-links li:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .nav-links li.active {
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.1), rgba(112, 0, 255, 0.1));
+            color: var(--accent-primary);
+            box-shadow: inset 0 0 0 1px rgba(0, 242, 255, 0.2);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .content {
+            padding: 40px;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, rgba(112, 0, 255, 0.05), transparent);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- COMPONENTS --- */
+        .glass-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(12px);
+        }
+
+        .scan-header {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .glass-input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 20px;
+            color: var(--text-main);
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            padding: 0 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* --- STATS GRID --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-val {
+            font-size: 38px;
+            font-weight: 800;
+        }
+
+        /* --- RESULTS LAYOUT --- */
+        .results-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 30px;
+        }
+
+        .issue-card {
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .issue-card:hover {
+            transform: scale(1.01);
+        }
+
+        .severity-pill {
+            position: absolute;
+            top: 28px;
+            right: 28px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .CRITICAL {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .HIGH {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .code-snippet {
+            background: #08090f;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #bbc1d1;
+            border-left: 4px solid var(--accent-primary);
+            overflow-x: auto;
+        }
+
+        .ai-insight-box {
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(112, 0, 255, 0.05));
+            border-top: 1px solid var(--glass-border);
+            margin-top: 20px;
+            padding-top: 15px;
+            font-size: 14px;
+        }
+
+        /* --- LOGS --- */
+        .terminal {
+            background: var(--terminal-bg);
+            border-radius: 16px;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #66e3ff;
+            border: 1px solid var(--glass-border);
+        }
+
+        .log-line {
+            margin-bottom: 4px;
+            border-left: 2px solid transparent;
+            padding-left: 8px;
+        }
+
+        .log-line.system {
+            color: #888;
+        }
+
+        .log-line.success {
+            color: var(--success);
+        }
+
+        .log-line.danger {
+            color: var(--danger);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2d3142;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-image: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i data-lucide="shield-check"></i>
+                <span class="gradient-text">CODE AUDIT AI</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" onclick="showTab(event, 'dashboard')"><i data-lucide="layout-grid"></i> Dashboard
+                </li>
+                <li onclick="showTab(event, 'history')"><i data-lucide="clock"></i> Audit History</li>
+                <li onclick="showTab(event, 'compliance')"><i data-lucide="file-check"></i> Compliance</li>
+                <li onclick="showTab(event, 'settings')"><i data-lucide="settings"></i> System Config</li>
+            </ul>
+            <div style="margin-top:auto; padding-top:20px; border-top:1px solid var(--glass-border);">
+                <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-muted);">
+                    <div
+                        style="width:8px; height:8px; background:var(--success); border-radius:50%; box-shadow:0 0 10px var(--success);">
+                    </div>
+                    Ollama Node Online
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- TAB: DASHBOARD -->
+            <div id="dashboard-tab" class="tab-content active">
+                <header>
+                    <h1>Security <span class="gradient-text">Insights</span></h1>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <button id="theme-toggle" class="glass-card"
+                            style="padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-main); border-radius: 12px;">
+                            <i data-lucide="moon" id="theme-icon"></i>
+                        </button>
+                        <div id="scan-badge" class="glass-card"
+                            style="padding: 10px 20px; font-size: 13px; font-weight: 700; color: var(--accent-primary);">
+                            SYSTEM IDLE</div>
+                    </div>
+                </header>
+
+                <section class="glass-card" style="margin-bottom: 30px;">
+                    <h3
+                        style="font-size: 15px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">
+                        Risk Score Methodology</h3>
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; font-size: 14px; line-height: 1.6;">
+                        <div>
+                            <p style="margin-bottom: 15px;"><strong>🧮 How it's Calculated:</strong></p>
+                            <p style="color: var(--text-muted); margin-bottom: 10px;">The score uses a
+                                <strong>Density-Based Scoring</strong> algorithm. It weights every issue found
+                                (Critical:
+                                25, High: 15, Medium: 7, Low: 3) and normalizes it against the project's size.
+                            </p>
+                            <p style="color: var(--text-muted);">This prevents large projects from having artificially
+                                high
+                                scores just because they have more files. It measures the <strong>concentration of
+                                    risk</strong> per 200 lines of code.</p>
+                        </div>
+                        <div>
+                            <p style="margin-bottom: 15px;"><strong>⚠️ Interpretation Guide:</strong></p>
+                            <ul style="list-style: none;">
+                                <li style="margin-bottom: 12px;">
+                                    <span
+                                        style="display:inline-block; width:12px; height:12px; background:var(--danger); border-radius:50%; margin-right:8px;"></span>
+                                    <strong>80 - 100+: Critical Risk</strong> - High concentration of vulnerabilities.
+                                    Immediate remediation required.
+                                </li>
+                                <li style="margin-bottom: 12px;">
+                                    <span
+                                        style="display:inline-block; width:12px; height:12px; background:var(--warning); border-radius:50%; margin-right:8px;"></span>
+                                    <strong>40 - 79: Warning</strong> - Significant security or quality debt. Needs
+                                    structured cleanup.
+                                </li>
+                                <li style="margin-bottom: 12px;">
+                                    <span
+                                        style="display:inline-block; width:12px; height:12px; background:var(--success); border-radius:50%; margin-right:8px;"></span>
+                                    <strong>0 - 39: Stable</strong> - Clean codebase with manageable risks. Continue
+                                    following best practices.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="glass-card" style="margin-bottom: 30px;">
+                    <h3
+                        style="font-size: 15px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+                        Initialize New Scan</h3>
+                    <div class="scan-header">
+                        <input type="text" id="github-url" placeholder="Paste GitHub Repository URL..."
+                            class="glass-input">
+                        <div
+                            style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.03); padding:0 15px; border-radius:12px; border:1px solid var(--glass-border);">
+                            <label class="switch">
+                                <input type="checkbox" id="use-ai">
+                                <span class="slider"></span>
+                            </label>
+                            <span style="font-size:13px; font-weight:600; color:var(--text-muted);">Enable
+                                DeepSeek</span>
+                        </div>
+                        <button class="btn-primary" id="start-scan">
+                            <i data-lucide="zap"></i> RUN SCAN
+                        </button>
+                    </div>
+                </section>
+
+                <div class="stats-grid">
+                    <div class="glass-card stat-card" style="border-bottom: 4px solid var(--danger);">
+                        <span class="text-muted" style="font-size:13px; font-weight:700;">RISK SCORE</span>
+                        <div class="stat-val" id="risk-score">0.0</div>
+                    </div>
+                    <div class="glass-card stat-card" style="border-bottom: 4px solid var(--warning);">
+                        <span class="text-muted" style="font-size:13px; font-weight:700;">THREATS FOUND</span>
+                        <div class="stat-val" id="total-issues">0</div>
+                    </div>
+                    <div class="glass-card stat-card" style="border-bottom: 4px solid var(--accent-primary);">
+                        <span class="text-muted" style="font-size:13px; font-weight:700;">FILES ANALYZED</span>
+                        <div class="stat-val" id="files-scanned">0</div>
+                    </div>
+                </div>
+
+                <div class="results-layout">
+                    <div class="issues-panel">
+                        <div id="issues-list">
+                            <div class="glass-card" style="text-align:center; padding: 60px;">
+                                <i data-lucide="github"
+                                    style="width:48px; height:48px; color:var(--glass-border); margin-bottom:20px;"></i>
+                                <p class="text-muted">Repository scan results will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="engine-panel">
+                        <div class="glass-card" style="margin-bottom: 24px;">
+                            <h3 style="margin-bottom:20px;">Threat Distribution</h3>
+                            <canvas id="severityChart" height="250"></canvas>
+                        </div>
+                        <div class="terminal" id="log-output">
+                            <div class="log-line system">Ready to audit. Connection established.</div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- TAB: HISTORY -->
+            <div id="history-tab" class="tab-content">
+                <header>
+                    <h1>Audit <span class="gradient-text">Registry</span></h1>
+                </header>
+                <div class="glass-card">
+                    <div id="history-list">
+                        <p class="text-muted">Loading historical data...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: COMPLIANCE -->
+            <div id="compliance-tab" class="tab-content">
+                <header>
+                    <h1>Security <span class="gradient-text">Compliance</span></h1>
+                </header>
+                <div class="glass-card">
+                    <p class="text-muted">Compliance reports and policy mapping are coming soon in v2.1.</p>
+                </div>
+            </div>
+
+            <!-- TAB: SETTINGS -->
+            <div id="settings-tab" class="tab-content">
+                <header>
+                    <h1>System <span class="gradient-text">Configuration</span></h1>
+                </header>
+                <div class="glass-card">
+                    <p class="text-muted">Centralized system settings and AI model management.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const API_BASE = "http://localhost:8005/api/v1";
+        let severityChart = null;
+
+        // Theme Management
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            const isLight = body.getAttribute('data-theme') === 'light';
+            const newTheme = isLight ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            themeIcon.setAttribute('data-lucide', isLight ? 'moon' : 'sun');
+            lucide.createIcons();
+
+            // Re-render chart to update colors for light mode if it exists
+            if (severityChart && severityChart.data.datasets.length > 0) {
+                severityChart.options.plugins.legend.labels.color = isLight ? '#94a3b8' : '#64748b';
+                severityChart.update();
+            }
+        });
+
+        function showTab(event, tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
+
+            const tab = document.getElementById(`${tabId}-tab`);
+            if (tab) tab.classList.add('active');
+
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            } else {
+                const navItems = document.querySelectorAll('.nav-links li');
+                if (tabId === 'dashboard') navItems[0].classList.add('active');
+                if (tabId === 'history') navItems[1].classList.add('active');
+                if (tabId === 'compliance') navItems[2].classList.add('active');
+                if (tabId === 'settings') navItems[3].classList.add('active');
+            }
+
+            if (tabId === 'history') loadHistory();
+        }
+
+        async function loadHistory() {
+            const list = document.getElementById('history-list');
+            try {
+                const res = await fetch(`${API_BASE}/scans`);
+                const scans = await res.json();
+
+                if (scans.length === 0) {
+                    list.innerHTML = '<p class="text-muted">No audit history found.</p>';
+                    return;
+                }
+
+                list.innerHTML = `
+                    <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr style="text-align:left; color:var(--text-muted); border-bottom: 1px solid var(--glass-border);">
+                                <th style="padding:12px;">ID</th>
+                                <th style="padding:12px;">Repository</th>
+                                <th style="padding:12px;">Score</th>
+                                <th style="padding:12px;">Issues</th>
+                                <th style="padding:12px;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${scans.map(s => `
+                                <tr style="border-bottom: 1px solid var(--glass-border); cursor:pointer;" onclick="viewScan('${s.id}')">
+                                    <td style="padding:12px; font-family:monospace; color:var(--accent-primary);">${s.id}</td>
+                                    <td style="padding:12px;">${s.url}</td>
+                                    <td style="padding:12px;"><span style="color:${s.score > 50 ? 'var(--danger)' : 'var(--success)'}">${s.score.toFixed(1)}</span></td>
+                                    <td style="padding:12px;">${s.issues}</td>
+                                    <td style="padding:12px; color:var(--text-muted);">${new Date(s.date).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (e) {
+                list.innerHTML = `<p class="text-danger">Error loading history: ${e.message}</p>`;
+            }
+        }
+
+        async function viewScan(id) {
+            showTab(null, 'dashboard');
+            document.getElementById('scan-badge').innerText = "LOADING";
+            try {
+                const res = await fetch(`${API_BASE}/scan/${id}`);
+                const data = await res.json();
+                if (data.status === 'completed') {
+                    renderUI(data.results);
+                    document.getElementById('scan-badge').innerText = "LOADED";
+                    log(`Loaded historical scan ${id}`, 'success');
+                } else {
+                    log(`Cannot load scan ${id}: status is ${data.status}`, 'danger');
+                    document.getElementById('scan-badge').innerText = "ERROR";
+                }
+            } catch (e) {
+                log(`Error loading scan: ${e.message}`, 'danger');
+                document.getElementById('scan-badge').innerText = "ERROR";
+            }
+        }
+
+        document.getElementById('start-scan').addEventListener('click', async () => {
+            const url = document.getElementById('github-url').value;
+            const useAi = document.getElementById('use-ai').checked;
+            if (!url) return;
+
+            log(`Initiating deep scan...`, 'system');
+            document.getElementById('scan-badge').innerText = "SCANNING";
+
+            try {
+                const res = await fetch(`${API_BASE}/scan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ github_url: url, use_ai: useAi })
+                });
+                const data = await res.json();
+                pollResults(data.id);
+            } catch (e) {
+                log(`API Connection Error: ${e.message}`, 'danger');
+            }
+        });
+
+        async function pollResults(id) {
+            const interval = setInterval(async () => {
+                const res = await fetch(`${API_BASE}/scan/${id}`);
+                const data = await res.json();
+
+                if (data.status === 'completed') {
+                    clearInterval(interval);
+                    renderUI(data.results);
+                    document.getElementById('scan-badge').innerText = "COMPLETED";
+                    log(`Scan complete. ${data.results.issues.length} threats found.`, 'success');
+                } else if (data.status === 'failed') {
+                    clearInterval(interval);
+                    document.getElementById('scan-badge').innerText = "FAILED";
+                    const errorMsg = data.error || "Unknown audit engine error. Check backend logs.";
+                    log(`Scan Failed: ${errorMsg}`, 'danger');
+                }
+            }, 3000);
+        }
+
+        function renderUI(results) {
+            const sum = results.summary;
+            document.getElementById('risk-score').innerText = sum.risk_score;
+            document.getElementById('total-issues').innerText = sum.total_issues;
+            document.getElementById('files-scanned').innerText = sum.files_scanned;
+
+            const list = document.getElementById('issues-list');
+            list.innerHTML = '';
+
+            results.issues.forEach(issue => {
+                const card = document.createElement('div');
+                card.className = 'glass-card issue-card';
+                card.innerHTML = `
+                    <div class="severity-pill ${issue.severity}">${issue.severity}</div>
+                    <h3 style="margin-bottom:10px;">${issue.name}</h3>
+                    <p style="color:var(--text-muted); font-size:14px;">${issue.description}</p>
+                    <div class="code-snippet"><code>${escapeHtml(issue.snippet)}</code></div>
+                    <div style="font-size:12px; color:var(--accent-primary);">
+                        <i data-lucide="map-pin" style="width:12px; height:12px;"></i> ${issue.file}:${issue.line}
+                    </div>
+                    ${issue.ai_insight ? `
+                        <div class="ai-insight-box">
+                            <p style="font-weight:700; margin-bottom:5px;">🤖 AI ANALYSIS</p>
+                            <p style="color:#a5f3fc; line-height:1.5;">${issue.ai_insight}</p>
+                        </div>
+                    ` : ''}
+                `;
+                list.appendChild(card);
+            });
+            lucide.createIcons();
+            initChart(results.issues);
+        }
+
+        function initChart(issues) {
+            const counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+            issues.forEach(i => counts[i.severity]++);
+
+            const ctx = document.getElementById('severityChart').getContext('2d');
+            if (severityChart) severityChart.destroy();
+            severityChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [counts.CRITICAL, counts.HIGH, counts.MEDIUM, counts.LOW],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#00f2ff'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } },
+                    cutout: '75%'
+                }
+            });
+        }
+
+        function log(msg, type) {
+            const out = document.getElementById('log-output');
+            const l = document.createElement('div');
+            l.className = `log-line ${type}`;
+            l.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            out.appendChild(l);
+            out.scrollTop = out.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>
