@@ -372,6 +372,23 @@
         input:checked+.slider:before {
             transform: translateX(20px);
         }
+
+        .progress-container {
+            height: 6px;
+            background: var(--glass);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            box-shadow: 0 0 10px var(--accent-primary);
+            transition: width 0.4s ease;
+        }
     </style>
 </head>
 
@@ -480,6 +497,9 @@
                         <button class="btn-primary" id="start-scan">
                             <i data-lucide="zap"></i> RUN SCAN
                         </button>
+                    </div>
+                    <div id="progress-container" class="progress-container">
+                        <div id="progress-bar" class="progress-bar"></div>
                     </div>
                 </section>
 
@@ -686,17 +706,35 @@
         });
 
         async function pollResults(id) {
+            let progress = 0;
+            const progressBar = document.getElementById('progress-bar');
+            const progressContainer = document.getElementById('progress-container');
+            progressContainer.style.display = 'block';
+
             const interval = setInterval(async () => {
+                // Simulate progress
+                if (progress < 90) {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    progressBar.style.width = `${progress}%`;
+                }
+
                 const res = await fetch(`${API_BASE}/scan/${id}`);
                 const data = await res.json();
 
                 if (data.status === 'completed') {
                     clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                        progressBar.style.width = '0%';
+                    }, 500);
                     renderUI(data.results);
                     document.getElementById('scan-badge').innerText = "COMPLETED";
                     log(`Scan complete. ${data.results.issues.length} threats found.`, 'success');
                 } else if (data.status === 'failed') {
                     clearInterval(interval);
+                    progressContainer.style.display = 'none';
                     document.getElementById('scan-badge').innerText = "FAILED";
                     const errorMsg = data.error || "Unknown audit engine error. Check backend logs.";
                     log(`Scan Failed: ${errorMsg}`, 'danger');
