@@ -2,7 +2,7 @@
 
 ![Code audit ai Banner](https://img.shields.io/badge/Code%20Audit%20AI-v2.0-blue?style=for-the-badge&logo=shield)
 ![Status](https://img.shields.io/badge/Status-Complete%20Overhaul-success?style=for-the-badge)
-![CI/CD](https://github.com/your-username/your-repo/actions/workflows/ci.yml/badge.svg)
+
 
 Code audit ai is a high-performance, containerized code auditing system that combines pattern-based security scans with AI-powered analysis. Built for speed, privacy, and modern developer workflows.
 
