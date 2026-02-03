@@ -17,7 +17,7 @@ services:
     healthCheckPath: /
 
   # 2. Frontend Static Site
-  - type: static
+  - type: static_site
     name: code-audit-ai-frontend
     env: static
     rootDir: frontend
