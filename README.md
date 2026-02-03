@@ -48,17 +48,14 @@ python -m http.server 3000
 
 #### 2. Docker Setup
 ```bash
-docker-compose up -d --build
-```
 
 #### 3. Access the Dashboard
 - **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **Backend API**: [http://localhost:8005/api/v1](http://localhost:8005/api/v1)
+- **Backend API**: [http://localhost:8005/docs](http://localhost:8005/docs)
 
 ---
 
 ### 📁 Project Structure
-```text
 ├── .github/workflows/  # CI/CD Pipeline (GitHub Actions)
 ├── backend/            # FastAPI Python Backend
 │   ├── app/
