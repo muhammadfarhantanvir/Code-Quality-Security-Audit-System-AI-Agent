@@ -4,7 +4,7 @@ services:
     name: code-audit-ai-backend
     env: docker
     dockerContext: ./backend
-    dockerfile: Dockerfile
+    dockerfilePath: Dockerfile
     plan: free
     envVars:
       - key: DATABASE_URL
