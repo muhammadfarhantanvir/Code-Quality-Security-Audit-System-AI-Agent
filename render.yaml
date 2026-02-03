@@ -21,7 +21,6 @@ services:
     name: code-audit-ai-frontend
     env: static
     rootDir: frontend
-    plan: free
 
 # 3. Database
 databases:
