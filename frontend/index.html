@@ -26,6 +26,11 @@
             --sidebar-bg: #0a0c14;
             --input-bg: rgba(0, 0, 0, 0.2);
             --terminal-bg: #000;
+            --code-bg: #08090f;
+            --code-text: #bbc1d1;
+            --ai-box-bg: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(112, 0, 255, 0.05));
+            --ai-text: #a5f3fc;
+            --ai-header: var(--accent-primary);
         }
 
         [data-theme="light"] {
@@ -38,6 +43,11 @@
             --sidebar-bg: #ffffff;
             --input-bg: #f8fafc;
             --terminal-bg: #1a1b26;
+            --code-bg: #f1f5f9;
+            --code-text: #334155;
+            --ai-box-bg: #f8fafc;
+            --ai-text: #1e293b;
+            --ai-header: var(--accent-secondary);
         }
 
         * {
@@ -245,22 +255,23 @@
         }
 
         .code-snippet {
-            background: #08090f;
+            background: var(--code-bg);
             border-radius: 12px;
             padding: 16px;
             margin: 16px 0;
             font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
-            color: #bbc1d1;
+            color: var(--code-text);
             border-left: 4px solid var(--accent-primary);
             overflow-x: auto;
         }
 
         .ai-insight-box {
-            background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(112, 0, 255, 0.05));
+            background: var(--ai-box-bg);
             border-top: 1px solid var(--glass-border);
             margin-top: 20px;
-            padding-top: 15px;
+            padding: 15px;
+            border-radius: 12px;
             font-size: 14px;
         }
 
@@ -715,8 +726,8 @@
                     </div>
                     ${issue.ai_insight ? `
                         <div class="ai-insight-box">
-                            <p style="font-weight:700; margin-bottom:5px;">🤖 AI ANALYSIS</p>
-                            <p style="color:#a5f3fc; line-height:1.5;">${issue.ai_insight}</p>
+                            <p style="font-weight:700; margin-bottom:5px; color:var(--ai-header);">🤖 AI ANALYSIS</p>
+                            <p style="color:var(--ai-text); line-height:1.5;">${issue.ai_insight}</p>
                         </div>
                     ` : ''}
                 `;
