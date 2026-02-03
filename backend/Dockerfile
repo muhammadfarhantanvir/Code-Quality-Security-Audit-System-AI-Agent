@@ -4,6 +4,8 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    build-essential \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -15,8 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Expose FastAPI port
-EXPOSE 8000
+# Expose port (Render uses 10000)
+EXPOSE 10000
 
-# Run the application (using shell form to expand $PORT)
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
