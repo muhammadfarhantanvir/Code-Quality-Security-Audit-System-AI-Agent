@@ -22,11 +22,6 @@ services:
     env: static
     rootDir: frontend
     plan: free
-    buildCommand: "" # No build needed for vanilla HTML/JS
-    publishDir: "." # Serve everything from the frontend folder
-    envVars:
-      - key: IS_PRODUCTION
-        value: "true"
 
 # 3. Database
 databases:
