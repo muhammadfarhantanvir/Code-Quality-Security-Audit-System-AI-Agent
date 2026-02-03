@@ -547,7 +547,11 @@
 
     <script>
         lucide.createIcons();
-        const API_BASE = "http://localhost:8005/api/v1";
+        // Dynamic API URL for Portfolio
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = isLocal
+            ? "http://localhost:8005/api/v1"
+            : "https://your-backend-url.railway.app/api/v1"; // Replace this after deploying backend
         let severityChart = null;
 
         // Theme Management

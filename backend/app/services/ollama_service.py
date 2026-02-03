@@ -1,13 +1,27 @@
 import requests
 import json
+import os
 from typing import Optional, Dict, Any
 
 class OllamaService:
     def __init__(self, base_url: str = "http://localhost:11434"):
-        self.base_url = base_url
+        self.base_url = os.getenv("OLLAMA_HOST", base_url)
+        self.groq_api_key = os.getenv("GROQ_API_KEY")
+        
+        if self.groq_api_key:
+            try:
+                from groq import Groq
+                self.client = Groq(api_key=self.groq_api_key)
+                print("[INFO] Cloud Mode: Using Groq AI Engine")
+            except ImportError:
+                print("[WARN] groq package not installed. Falling back to Ollama.")
+                self.client = None
+        else:
+            self.client = None
+            print("[INFO] Local Mode: Using Ollama AI Engine")
 
     def analyze_code(self, code_snippet: str, issue_type: str) -> Optional[str]:
-        """Use Ollama to provide deeper insight into a detected issue"""
+        """Use Groq or Ollama to provide deeper insight into a detected issue"""
         prompt = f"""
         Analyze the following code for a {issue_type} vulnerability. 
         Provide a concise explanation of the risk and a corrected version of the code.
@@ -20,6 +34,19 @@ class OllamaService:
         Fix: [Code block]
         """
         
+        # Try Groq first if key exists
+        if self.client:
+            try:
+                completion = self.client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1024
+                )
+                return completion.choices[0].message.content
+            except Exception as e:
+                print(f"Groq API error: {e}")
+
+        # Fallback to Ollama
         try:
             response = requests.post(
                 f"{self.base_url}/api/generate",
@@ -50,6 +77,17 @@ class OllamaService:
         {summary}
         """
         
+        if self.client:
+            try:
+                completion = self.client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1024
+                )
+                return completion.choices[0].message.content
+            except Exception as e:
+                print(f"Groq recommendation error: {e}")
+
         try:
             response = requests.post(
                 f"{self.base_url}/api/generate",
