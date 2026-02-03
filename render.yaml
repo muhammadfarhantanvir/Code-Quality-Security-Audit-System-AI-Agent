@@ -3,8 +3,7 @@ services:
   - type: web
     name: code-audit-ai-backend
     env: docker
-    dockerContext: ./backend
-    dockerfilePath: Dockerfile
+    dockerContext: backend
     plan: free
     envVars:
       - key: DATABASE_URL
